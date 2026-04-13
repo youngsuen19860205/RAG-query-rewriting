@@ -1,0 +1,23 @@
+# 火山方舟 SDK（核心依赖）
+volcengine-python-sdk[ark]>=1.0.0
+
+# 小模型推理
+transformers>=4.40.0
+torch>=2.2.0
+optimum[onnxruntime]>=1.19.0
+onnxruntime>=1.18.0
+sentencepiece>=0.1.99
+
+# 评测指标
+rouge_score>=0.1.2
+bert_score>=0.3.13
+nltk>=3.8.1
+datasets>=2.19.0
+
+# 服务部署
+fastapi>=0.111.0
+uvicorn>=0.30.0
+
+# 工具
+python-dotenv>=1.0.1
+tqdm>=4.66.0
