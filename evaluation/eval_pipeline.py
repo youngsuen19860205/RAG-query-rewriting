@@ -184,11 +184,14 @@ class EvalPipeline:
         enable_bert_score: bool = True,
         enable_llm_score: bool = True,
         llm_score_sample_rate: float = 1.0,
+        llm_score_rate_limit_s: float = 0.1,
     ):
         self.rewriter = rewriter
         self.enable_bert_score = enable_bert_score
         self.enable_llm_score = enable_llm_score
         self.llm_score_sample_rate = llm_score_sample_rate
+        # Delay between LLM scoring API calls to respect rate limits (seconds)
+        self.llm_score_rate_limit_s = llm_score_rate_limit_s
 
     def evaluate(
         self,
@@ -289,7 +292,7 @@ class EvalPipeline:
                 )
                 sr.llm_score = score
                 sr.llm_explanation = explanation
-                time.sleep(0.1)  # rate limiting
+                time.sleep(self.llm_score_rate_limit_s)  # configurable rate limiting
 
         return results
 

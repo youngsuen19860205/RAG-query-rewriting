@@ -334,7 +334,7 @@ _TRAILING_PUNCTUATION = re.compile(r"[，。！？,.!?]+$")
 def clean_asr_noise(query: str) -> str:
     """清理 ASR 口语噪声: 填充词、重复标点"""
     q = _FILLER_WORDS.sub("", query)
-    q = re.sub(r"(.)\1{3,}", r"\1\1", q)   # 过度重复字符压缩
+    q = re.sub(r"(.)\1{3,}", r"\1\1", q)   # 4+个连续相同字符压缩为2个 (e.g., 'aaaa' → 'aa')
     q = q.strip()
     return q if q else query
 

@@ -24,6 +24,10 @@ class ModelRewriter:
     优先加载 ONNX/INT8 量化版本以获得最低延迟；
     如 ONNX 不可用则回退到 PyTorch 推理。
 
+    Note: When using the default model_id (google/mt5-small), the model weights
+    will be downloaded from HuggingFace Hub on first run (~300MB). Set
+    REWRITER_MODEL_ID env var or pass model_id to use a local path instead.
+
     用法:
         rewriter = ModelRewriter()
         rewriter.load()
@@ -47,6 +51,12 @@ class ModelRewriter:
         self._tokenizer = None
         self._model = None
         self._backend = None   # "onnx" | "torch"
+        if model_id == DEFAULT_MODEL_ID:
+            logger.info(
+                "Using default model '%s'. On first run, weights (~300MB) will be "
+                "downloaded from HuggingFace Hub. Set REWRITER_MODEL_ID env var to use a local path.",
+                DEFAULT_MODEL_ID,
+            )
 
     # ── 加载 ────────────────────────────────
     def load(self) -> None:

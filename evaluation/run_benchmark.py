@@ -112,6 +112,11 @@ def run_ab_comparison(
     }
 
     # 判断胜者（综合指标）
+    # Compute weighted quality delta across text-similarity metrics.
+    # Weights: ROUGE-L (0.3) + BLEU (0.2) + BERTScore (0.3) + LLM-score (0.2)
+    # LLM score is normalised to [0,1] by dividing by 5 (its maximum value).
+    # These weights prioritise semantic similarity (ROUGE-L + BERTScore = 0.6)
+    # while LLM score acts as a tiebreaker with moderate influence.
     quality_delta = (
         comparison["delta"]["rouge_l"] * 0.3
         + comparison["delta"]["bleu"] * 0.2
