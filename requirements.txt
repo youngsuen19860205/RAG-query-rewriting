@@ -21,3 +21,6 @@ uvicorn>=0.30.0
 # 工具
 python-dotenv>=1.0.1
 tqdm>=4.66.0
+
+# 可视化（可选）
+matplotlib>=3.8.0
