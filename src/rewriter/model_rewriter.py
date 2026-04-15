@@ -1,5 +1,5 @@
 """
-小模型改写器 — mT5-small 推理（支持 ONNX / INT8 量化）
+小模型改写器 — flan-t5-base 推理（支持 ONNX / INT8 量化）
 优化目标: 推理延迟最低，适合端侧/在线场景
 依赖: transformers, optimum[onnxruntime], onnxruntime
 """
@@ -11,21 +11,21 @@ from typing import Optional, Tuple
 logger = logging.getLogger(__name__)
 
 # HuggingFace 模型标识（可本地路径覆盖）
-DEFAULT_MODEL_ID = os.getenv("REWRITER_MODEL_ID", "google/mt5-small")
-DEFAULT_ONNX_DIR = os.getenv("REWRITER_ONNX_DIR", "/tmp/mt5_small_onnx")
+DEFAULT_MODEL_ID = os.getenv("REWRITER_MODEL_ID", "google/flan-t5-base")
+DEFAULT_ONNX_DIR = os.getenv("REWRITER_ONNX_DIR", "/tmp/flan_t5_base_onnx")
 MAX_INPUT_LEN = 256
-MAX_OUTPUT_LEN = 64
+MAX_OUTPUT_LEN = 128
 
 
 class ModelRewriter:
     """
-    mT5-small 推理改写器
+    flan-t5-base 推理改写器
 
     优先加载 ONNX/INT8 量化版本以获得最低延迟；
     如 ONNX 不可用则回退到 PyTorch 推理。
 
-    Note: When using the default model_id (google/mt5-small), the model weights
-    will be downloaded from HuggingFace Hub on first run (~300MB). Set
+    Note: When using the default model_id (google/flan-t5-base), the model weights
+    will be downloaded from HuggingFace Hub on first run (~900MB). Set
     REWRITER_MODEL_ID env var or pass model_id to use a local path instead.
 
     用法:
@@ -53,7 +53,7 @@ class ModelRewriter:
         self._backend = None   # "onnx" | "torch"
         if model_id == DEFAULT_MODEL_ID:
             logger.info(
-                "Using default model '%s'. On first run, weights (~300MB) will be "
+                "Using default model '%s'. On first run, weights (~900MB) will be "
                 "downloaded from HuggingFace Hub. Set REWRITER_MODEL_ID env var to use a local path.",
                 DEFAULT_MODEL_ID,
             )
@@ -122,8 +122,8 @@ class ModelRewriter:
     def _build_input(self, query: str, context_text: str = "") -> str:
         """构建模型输入 prompt"""
         if context_text:
-            return f"改写query: {context_text} | 当前: {query}"
-        return f"改写query: {query}"
+            return f"Given the conversation context: {context_text}\nRewrite the following Chinese query to be more complete and clear: {query}"
+        return f"Rewrite the following Chinese query to be more complete and clear: {query}"
 
     def rewrite(
         self,
