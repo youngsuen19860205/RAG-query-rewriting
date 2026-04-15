@@ -47,7 +47,7 @@ class HybridRewriter:
     层级:
       1. ASR 噪声清洗 (纯字符串, <0.1ms)
       2. 规则引擎     (正则匹配, <1ms)
-      3. 小模型推理   (mT5-small ONNX, ~10-30ms)
+      3. 小模型推理   (flan-t5-base ONNX, ~10-30ms)
       4. Doubao LLM  (可选降级, ~200-500ms)
 
     用法:
@@ -139,7 +139,7 @@ class HybridRewriter:
                 rewritten, model_latency = self._model_rewriter.rewrite(
                     cleaned, context_text=history_text
                 )
-                if rewritten and rewritten != cleaned and len(rewritten) > 1:
+                if rewritten and len(rewritten) > 1:
                     total_latency = (time.perf_counter() - t_start) * 1000
                     return RewriteResult(
                         original_query=query,
@@ -148,7 +148,7 @@ class HybridRewriter:
                         method="model",
                         latency_ms=total_latency,
                         confidence=0.75,
-                        changed=True,
+                        changed=(rewritten != query),
                     )
             except Exception as e:
                 logger.warning("Model rewrite failed: %s", e)
